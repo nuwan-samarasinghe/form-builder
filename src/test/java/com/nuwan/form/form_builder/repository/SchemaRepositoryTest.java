@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @DataJpaTest
 public class SchemaRepositoryTest {
@@ -148,5 +150,16 @@ public class SchemaRepositoryTest {
         Schema updatedSchema = schemaRepository.save(savedSchema);
         assertThat(updatedSchema.getName()).isEqualTo("UpdatedSchema");
         assertThat(updatedSchema.getVersion()).isEqualTo(200L);
+    }
+
+    @Test
+    @DisplayName("Should not be able to add same schema name and version")
+    public void testAddNewSchemaWithSameNameAndSameVersionShouldThrowException() {
+        Schema schema = createSchema("This is a same schema name", 100L);
+        entityManager.persistAndFlush(schema);
+        assertThrows(DataIntegrityViolationException.class, () -> {
+            Schema schema2 = createSchema("This is a same schema name", 100L);
+            schemaRepository.saveAndFlush(schema2);
+        });
     }
 }
