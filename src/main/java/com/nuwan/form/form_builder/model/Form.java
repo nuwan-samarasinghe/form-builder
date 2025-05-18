@@ -6,13 +6,11 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Entity
 @Table(
         name = "form",
         uniqueConstraints = {
-                @UniqueConstraint(columnNames = {"title", "sort_order", "slug", "section_id"}, name = "uk_title_sort_order_slug_section_id")
+                @UniqueConstraint(columnNames = {"title", "slug", "section_id"}, name = "uk_title_slug_section_id")
         }
 )
 public class Form extends BaseModel {
