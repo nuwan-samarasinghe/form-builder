@@ -98,4 +98,55 @@ public class SchemaRepositoryTest {
         Optional<Schema> schema = schemaRepository.findByNameAndVersion("NonExistent", 999L);
         assertThat(schema).isEmpty();
     }
+
+    @Test
+    @DisplayName("Should return empty when schema with name and version not found")
+    public void testFindSchemaByNameAndVersionNotFound() {
+        Optional<Schema> schema = schemaRepository.findByNameAndVersion("NonExistent", null);
+        assertThat(schema).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return empty when schema with name and version not found")
+    public void testFindSchemaByNameAndVersionNotFound2() {
+        Optional<Schema> schema = schemaRepository.findByNameAndVersion(null, 999L);
+        assertThat(schema).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should return empty when schema with name and version not found")
+    public void testFindSchemaByNameAndVersionNotFound3() {
+        Optional<Schema> schema = schemaRepository.findByNameAndVersion(null, null);
+        assertThat(schema).isEmpty();
+    }
+
+    @Test
+    @DisplayName("Should successfully persists the schema when added")
+    public void testSaveSchema() {
+        schemaRepository.save(createSchema("TestSchema", 100L));
+        List<Schema> schemas = schemaRepository.findAll();
+        assertThat(schemas).isNotEmpty();
+        assertThat(schemas.size()).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("Should successfully delete the schema when removed")
+    public void testDeleteSchema() {
+        Schema schema = createSchema("TestSchema", 100L);
+        Schema savedSchema = entityManager.persistAndFlush(schema);
+        schemaRepository.delete(savedSchema);
+    }
+
+    @Test
+    @DisplayName("Should successfully update schema")
+    public void testUpdateSchema() {
+        Schema schema = createSchema("TestSchema", 100L);
+        Schema savedSchema = entityManager.persistAndFlush(schema);
+        savedSchema.setName("UpdatedSchema");
+        savedSchema.setVersion(200L);
+        savedSchema.setUpdatedAt(Timestamp.from(Instant.now()));
+        Schema updatedSchema = schemaRepository.save(savedSchema);
+        assertThat(updatedSchema.getName()).isEqualTo("UpdatedSchema");
+        assertThat(updatedSchema.getVersion()).isEqualTo(200L);
+    }
 }
