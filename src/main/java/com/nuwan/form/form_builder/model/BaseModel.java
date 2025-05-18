@@ -18,11 +18,9 @@ public class BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private Timestamp createdAt;
-
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private Timestamp updatedAt;
